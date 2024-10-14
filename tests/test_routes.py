@@ -43,14 +43,12 @@ class TestAccountService(TestCase):
     def tearDownClass(cls):
         """Runs once before test suite"""
 
-
     def setUp(self):
         """Runs before each test"""
         db.session.query(Account).delete()  # clean up the last tests
         db.session.commit()
 
         self.client = app.test_client()
-
 
     def tearDown(self):
         """Runs once after each test case"""
@@ -84,13 +82,11 @@ class TestAccountService(TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
     def test_health(self):
         resp = self.client.get("/health")
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertEqual(data["status"], "OK")
-
 
     def test_create_account(self):
         account = AccountFactory()
@@ -113,7 +109,6 @@ class TestAccountService(TestCase):
         self.assertEqual(new_account["phone_number"], account.phone_number)
         self.assertEqual(new_account["date_joined"], str(account.date_joined))
 
-
     def test_bad_request(self):
         response = self.client.post(BASE_URL, json={"name": "not enough data"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -127,7 +122,6 @@ class TestAccountService(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-
     def test_get_account(self):
         account = self._create_accounts(1)[0]
         resp = self.client.get(
@@ -137,11 +131,9 @@ class TestAccountService(TestCase):
         data = resp.get_json()
         self.assertEqual(data["name"], account.name)
 
-
     def test_get_account_not_found(self):
         resp = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)     
-
 
     def test_update_account(self):
         # create an Account to update
@@ -157,7 +149,6 @@ class TestAccountService(TestCase):
         updated_account = resp.get_json()
         self.assertEqual(updated_account["name"], "Something Known")   
 
-
     def test_get_account_list(self):
         """It should Get a list of Accounts"""
         self._create_accounts(5)
@@ -165,7 +156,6 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)        
-
 
     def test_delete_account(self):
         """It should Delete an Account"""
@@ -176,7 +166,6 @@ class TestAccountService(TestCase):
     def test_method_not_allowed(self):
         resp = self.client.delete(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)        
-
 
     def test_security_headers(self):
         response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
